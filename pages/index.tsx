@@ -1,62 +1,75 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import DropDown, { VibeType } from "../components/DropDown";
 import Footer from "../components/Footer";
 import Github from "../components/GitHub";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
-
-function parseResponse(
-  response: string
-): { question: string; answer: string }[] {
-  const array: { question: string; answer: string }[] = [];
-
-  const lines = response.split("\n");
-
-  for (let index = 0; index < lines.length; index++) {
-    const line = lines[index];
-    const nextLine = lines[index + 1];
-    if (line.startsWith("Q:")) {
-      array.push({
-        question: line,
-        answer: nextLine,
-      });
-    }
-  }
-  return array;
-}
+import Page from "../components/Page";
+import { ChatGPTMessage } from "../utils/OpenAIStream";
 
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
-  const [generatedBios, setGeneratedBios] = useState<string>("");
+  const [latestResponse, setLatestResponse] = useState<string>("");
+  const [history, setHistory] = useState<ChatGPTMessage[]>([]);
 
-  const bioRef = useRef<null | HTMLDivElement>(null);
-
-  const scrollToBios = () => {
-    if (bioRef.current !== null) {
-      bioRef.current.scrollIntoView({ behavior: "smooth" });
+  const historyAsPages = useMemo(() => {
+    const pages: { content: string; selectedOptionKey: string }[] = [];
+    console.log(history);
+    for (let index = 0; index < history.length; index++) {
+      const item = history[index];
+      const nextItem = history[index + 1];
+      if (item.role === "system") {
+        pages.push({
+          content: item.content,
+          selectedOptionKey: nextItem.content,
+        });
+      }
     }
-  };
+    return pages;
+  }, [history]);
 
-  const prompt = `Generate 10 difficult quiz questions on the topic of ${bio}. Clearly label each question with "Q:" and each answer with "A:".`;
+  async function pickOption(option: string) {
+    const newHistory: ChatGPTMessage[] = [
+      ...history,
+      {
+        role: "system",
+        content: latestResponse,
+      },
+      {
+        role: "user",
+        content: option,
+      },
+    ];
+    setHistory(newHistory);
+    await generateBio(newHistory);
+  }
 
-  const generateBio = async (e: any) => {
-    e.preventDefault();
-    setGeneratedBios("");
+  function start() {
+    const newHistory: ChatGPTMessage[] = [
+      {
+        role: "user",
+        content: `Write the first paragraph of a choose-your-own-adventure story about ${bio}. Give 3 one-sentence options as to what to do next, clearly labelled with "1:", "2:", "3:", each one on a new line`,
+      },
+    ];
+    setHistory(newHistory);
+    return generateBio(newHistory);
+  }
+
+  const generateBio = async (history2: ChatGPTMessage[]) => {
+    setLatestResponse("");
     setLoading(true);
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        prompt,
-      }),
+      body: JSON.stringify(history2),
     });
 
     if (!response.ok) {
@@ -77,9 +90,8 @@ const Home: NextPage = () => {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      setGeneratedBios((prev) => prev + chunkValue);
+      setLatestResponse((prev) => prev + chunkValue);
     }
-    scrollToBios();
     setLoading(false);
   };
 
@@ -115,7 +127,7 @@ const Home: NextPage = () => {
               className="mb-5 sm:mb-0"
             />
             <p className="text-left font-medium">
-              Type in what you want the quiz to be about
+              Type in what you want the story to be about
             </p>
           </div>
           <input
@@ -129,7 +141,7 @@ const Home: NextPage = () => {
           {!loading && (
             <button
               className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
-              onClick={(e) => generateBio(e)}
+              onClick={(e) => start()}
             >
               Generate your quiz &rarr;
             </button>
@@ -143,6 +155,9 @@ const Home: NextPage = () => {
             </button>
           )}
         </div>
+        <pre className="whitespace-pre-wrap text-left">
+          {/* {JSON.stringify(history, null, 2)} */}
+        </pre>
         <Toaster
           position="top-center"
           reverseOrder={false}
@@ -150,39 +165,37 @@ const Home: NextPage = () => {
         />
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
         <div className="space-y-10 my-10">
-          {generatedBios && (
+          {latestResponse && (
             <>
               <div>
-                <h2
-                  className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto"
-                  ref={bioRef}
-                >
+                <h2 className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto">
                   Your generated quiz
                 </h2>
               </div>
-              <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
-                {parseResponse(generatedBios).map((generatedBio) => {
-                  return (
-                    <label
-                      className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border w-full"
-                      key={generatedBio.question}
-                    >
-                      <input type="checkbox" className="peer sr-only" />
-                      <p>{generatedBio.question}</p>
-                      <p className="hidden peer-checked:block">
-                        {generatedBio.answer}
-                      </p>
-                      <p className=" peer-checked:hidden">
-                        <span className="bg-neutral-500 text-white px-16 py-1">
-                          Reveal
-                        </span>
-                      </p>
-                    </label>
-                  );
-                })}
-              </div>
             </>
           )}
+        </div>
+        <div className="grid">
+          {historyAsPages.map((page) => (
+            <Page
+              content={page.content}
+              selectedOptionKey={page.selectedOptionKey}
+              onOptionKeySelected={(newKey) => {
+                return pickOption(newKey);
+              }}
+              pageIndex={historyAsPages.length - 1}
+              activePageIndex={historyAsPages.length}
+            ></Page>
+          ))}
+          <Page
+            content={latestResponse}
+            selectedOptionKey={""}
+            onOptionKeySelected={(newKey) => {
+              return pickOption(newKey);
+            }}
+            pageIndex={historyAsPages.length}
+            activePageIndex={historyAsPages.length}
+          ></Page>
         </div>
       </main>
       <Footer />
