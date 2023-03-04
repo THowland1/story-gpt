@@ -17,10 +17,10 @@ const Home: NextPage = () => {
   const [vibe, setVibe] = useState<VibeType>("Professional");
   const [latestResponse, setLatestResponse] = useState<string>("");
   const [history, setHistory] = useState<ChatGPTMessage[]>([]);
+  const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
 
   const historyAsPages = useMemo(() => {
     const pages: { content: string; selectedOptionKey: string }[] = [];
-    console.log(history);
     for (let index = 0; index < history.length; index++) {
       const item = history[index];
       const nextItem = history[index + 1];
@@ -31,6 +31,7 @@ const Home: NextPage = () => {
         });
       }
     }
+    setSelectedPageIndex(pages.length);
     return pages;
   }, [history]);
 
@@ -175,27 +176,56 @@ const Home: NextPage = () => {
             </>
           )}
         </div>
-        <div className="grid">
-          {historyAsPages.map((page) => (
+        <div>
+          <div className="grid">
+            {historyAsPages.map((page, index) => (
+              <Page
+                content={page.content}
+                selectedOptionKey={page.selectedOptionKey}
+                onOptionKeySelected={(newKey) => {
+                  return pickOption(newKey);
+                }}
+                pageIndex={index}
+                activePageIndex={selectedPageIndex}
+              ></Page>
+            ))}
             <Page
-              content={page.content}
-              selectedOptionKey={page.selectedOptionKey}
+              content={latestResponse}
+              selectedOptionKey={""}
               onOptionKeySelected={(newKey) => {
                 return pickOption(newKey);
               }}
-              pageIndex={historyAsPages.length - 1}
-              activePageIndex={historyAsPages.length}
+              pageIndex={historyAsPages.length}
+              activePageIndex={selectedPageIndex}
             ></Page>
-          ))}
-          <Page
-            content={latestResponse}
-            selectedOptionKey={""}
-            onOptionKeySelected={(newKey) => {
-              return pickOption(newKey);
-            }}
-            pageIndex={historyAsPages.length}
-            activePageIndex={historyAsPages.length}
-          ></Page>
+          </div>
+          <div className="">
+            <button
+              className="p-2 mx-2 disabled:opacity-50"
+              disabled={!(selectedPageIndex > 0)}
+              onClick={() => {
+                if (selectedPageIndex > 0) {
+                  setSelectedPageIndex(selectedPageIndex - 1);
+                }
+              }}
+            >
+              &larr;
+            </button>
+            <span>
+              {selectedPageIndex + 1} / {historyAsPages.length + 1}
+            </span>
+            <button
+              className="p-2 mx-2  disabled:opacity-50"
+              disabled={!(selectedPageIndex < historyAsPages.length)}
+              onClick={() => {
+                if (selectedPageIndex < historyAsPages.length) {
+                  setSelectedPageIndex(selectedPageIndex + 1);
+                }
+              }}
+            >
+              &rarr;
+            </button>
+          </div>
         </div>
       </main>
       <Footer />

@@ -17,12 +17,19 @@ const Page = (props: PageProps) => {
     <div
       className={classNames(
         "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col justify-between relative",
-        "row-start-1 col-start-1 bg-white",
+        "row-start-1 col-start-1 bg-white  origin-[-4px]",
         {
-          "animate-[flip_1s_linear_1_forwards] origin-[-4px] z-10":
-            isPreviousPage,
+          "animate-[flip_1s_linear_1_forwards] z-10": isPreviousPage,
         }
       )}
+      style={{
+        zIndex:
+          props.pageIndex === props.activePageIndex
+            ? 1
+            : props.pageIndex === props.activePageIndex - 1
+            ? 2
+            : 0,
+      }}
     >
       <div
         className={classNames(
