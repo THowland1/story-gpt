@@ -343,7 +343,7 @@ const Home: NextPage = () => {
                 activePageIndex={selectedPageIndex}
               ></StoryPage>
             ))}
-            {latestResponse && (
+            {state === "after open" && (
               <StoryPage
                 content={latestResponse}
                 selectedOptionKey={""}
