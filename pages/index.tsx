@@ -15,6 +15,89 @@ import { ChatGPTMessage } from "../utils/OpenAIStream";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 
+const IDEAS = [
+  "Time traveler's dilemma",
+  "Choose pirate's treasure map",
+  "Survive zombie apocalypse",
+  "Defeat space invaders",
+  "Haunted house escape",
+  "Wizard duel decision",
+  "Escape prison island",
+  "Lost in jungle",
+  "Ninja rescue mission",
+  "Mythical creature quest",
+  "Alien planet exploration",
+  "Time travel conundrum",
+  "Ghost hunter investigation",
+  "Underwater adventure",
+  "Superhero team-up challenge",
+  "Robot uprising decision",
+  "Choose spy's gadgets",
+  "Planetary disaster rescue",
+  "Dragon tamings",
+  "Post-apocalyptic survival",
+  "Jungle temple adventure",
+  "Cyborg lab escape",
+  "Search for lost artifact",
+  "Interactive murder mystery",
+  "Pirate captain's journey",
+  "Deep space dilemma",
+  "Explore abandoned city",
+  "Desert island survival",
+  "Choose wizard's familiars",
+  "Interactive spy mission",
+  "Journey to the center",
+  "Shape-shifter's secret mission",
+  "Lost in space decision",
+  "Choose superhero's powers",
+  "Medieval castle adventure",
+  "Time traveler's paradox",
+  "Escape from secret lab",
+  "Save kingdom decision",
+  "Choose knight's armor",
+  "Fantasy quest",
+  "Undercover cop dilemma",
+  "Choose dragon's element",
+  "Hidden temple expedition",
+  "Alien invasion response",
+  "Vampire hunter decision",
+  "Space station survival",
+  "Treasure hunter",
+  "Interactive spy thriller",
+  "Robot uprising response",
+  "Superhero origin story",
+  "Choose wizard's spellbook",
+  "Galactic battle decision",
+  "Jungle tribe encounter",
+  "Mystic forest adventure",
+  "Secret agent's mission",
+  "Choose ninja's weapon",
+  "Choose pirate's ship",
+  "Time travel paradox",
+  "Survive monster invasion",
+  "Interactive detective story",
+  "Choose ghost hunter's equipment",
+  "Haunted mansion escape",
+  "Planetary exploration decision",
+  "Escape from underwater lab",
+  "Mythical beast encounter",
+  "Choose cyborg's upgrades",
+  "Lost city adventure",
+  "Pirate treasure decision",
+  "Choose knight's steed",
+  "Interactive spy adventure",
+  "Robot rebellion decision",
+  "Choose superhero's costume",
+  "Interactive wizarding world",
+  "Space exploration decision",
+  "Escape from medieval dungeon",
+  "Search for hidden treasure",
+  "Choose ninja's strategy",
+  "Choose pirate's crew",
+  "Time travel conundrum",
+  "Fight against the gods",
+];
+
 async function generateImageUrlFromPrompt(
   prompt: string
 ): Promise<{ url: string }> {
@@ -55,6 +138,9 @@ const Home: NextPage = () => {
   const [latestResponse, setLatestResponse] = useState<string>("");
   const [history, setHistory] = useState<ChatGPTMessage[]>([]);
   const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
+  const [state, setState] = useState<
+    "before create" | "before open" | "after open"
+  >("before create");
   const imageQuery = useQuery({
     queryKey: ["imageUrls", bio],
     queryFn: ({ queryKey }) =>
@@ -82,9 +168,13 @@ const Home: NextPage = () => {
         });
       }
     }
-    setSelectedPageIndex(pages.length + 1);
+    if (state === "after open") {
+      setSelectedPageIndex(pages.length + 1);
+    } else {
+      setSelectedPageIndex(pages.length);
+    }
     return pages;
-  }, [history]);
+  }, [history, state]);
 
   async function pickOption(option: string) {
     const newHistory: ChatGPTMessage[] = [
@@ -113,6 +203,7 @@ const Home: NextPage = () => {
     ];
     setHistory(newHistory);
     await setImageUrl();
+    setState("before open");
     return generateBio(newHistory);
   }
 
@@ -160,7 +251,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Header />
-      <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-12 sm:mt-20">
+      <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-4 sm:mt-8">
         <Toaster
           position="top-center"
           reverseOrder={false}
@@ -170,7 +261,7 @@ const Home: NextPage = () => {
 
         <div className="contents">
           <div
-            className="grid text-indigo-900 shadow-[2px_2px_7px_5px_#0004]"
+            className="grid text-indigo-900 shadow-[2px_2px_7px_5px_#0004] relative"
             style={{
               minWidth: "min(450px, 100%)",
               aspectRatio: "11 / 15",
@@ -178,8 +269,9 @@ const Home: NextPage = () => {
           >
             <form
               className={classNames(
-                "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col justify-center relative",
-                "row-start-1 col-start-1 bg-indigo-100  origin-[-4px] z-10 transition-opacity",
+                "w-full max-w-md mx-auto p-8 pl-12 shadow h-full flex flex-col justify-between absolute inset-0",
+                "row-start-1 col-start-1  origin-[-4px] z-10 transition-opacity bg-indigo-500",
+                "book-gradient",
                 {
                   "opacity-0 pointer-events-none": history.length > 0,
                   "opacity-100": history.length === 0,
@@ -190,32 +282,47 @@ const Home: NextPage = () => {
                 start();
               }}
             >
-              <div className="">
-                <p className="text-left font-medium text-indigo-400">
-                  Tell me a story about ...
-                </p>
-                <input
-                  type="text"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="text-indigo-700 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 mt-3"
-                  placeholder={"e.g. A greyhound who saves the day"}
-                />
-              </div>
+              <p className="text-3xl font-semibold text-white flex-1">
+                Choose your own adventure with a ChatGPT-authored story about...
+              </p>
+              <div>
+                <div className="">
+                  <input
+                    type="text"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    className="text-indigo-700 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 mt-3"
+                    placeholder={"e.g. A greyhound who saves the day"}
+                  />
+                </div>
 
-              {!loading && (
-                <button className="bg-indigo-600 rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-indigo-800 w-full">
-                  Let's go &rarr;
-                </button>
-              )}
-              {loading && (
-                <button
-                  className="bg-indigo-600 rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-indigo-800 w-full"
-                  disabled
-                >
-                  <LoadingDots color="white" style="large" />
-                </button>
-              )}
+                <div className="text-right">
+                  <button
+                    type="button"
+                    className="text-indigo-100 font-light text-sm"
+                    onClick={() => {
+                      setBio(IDEAS[Math.floor(Math.random() * IDEAS.length)]);
+                    }}
+                  >
+                    random
+                  </button>
+                </div>
+
+                {!loading && (
+                  <button className="bg-indigo-700 border border-white/30 rounded-xl text-white font-medium px-4 py-2  mt-2 hover:bg-indigo-800 w-full">
+                    Let's go &rarr;
+                  </button>
+                )}
+                {loading && (
+                  <button
+                    className="bg-indigo-600 rounded-xl text-white font-medium px-4 py-2 mt-2 hover:bg-indigo-800 w-full"
+                    disabled
+                  >
+                    <LoadingDots color="white" style="large" />
+                  </button>
+                )}
+              </div>
+              <div className="flex-1"></div>
             </form>
             <FrontPage
               title={titleQuery.data}
@@ -236,17 +343,24 @@ const Home: NextPage = () => {
                 activePageIndex={selectedPageIndex}
               ></StoryPage>
             ))}
-            <StoryPage
-              content={latestResponse}
-              selectedOptionKey={""}
-              onOptionKeySelected={(newKey) => {
-                return pickOption(newKey);
-              }}
-              pageIndex={historyAsPages.length + 1}
-              activePageIndex={selectedPageIndex}
-            ></StoryPage>
+            {latestResponse && (
+              <StoryPage
+                content={latestResponse}
+                selectedOptionKey={""}
+                onOptionKeySelected={(newKey) => {
+                  return pickOption(newKey);
+                }}
+                pageIndex={historyAsPages.length + 1}
+                activePageIndex={selectedPageIndex}
+              ></StoryPage>
+            )}
           </div>
-          <div className="">
+          <div
+            className={classNames("transition-opacity", {
+              "opacity-0": state === "before create",
+              "opacity-100": state !== "before create",
+            })}
+          >
             <button
               className="p-2 mx-2 disabled:opacity-50"
               disabled={!(selectedPageIndex > 0)}
@@ -265,6 +379,9 @@ const Home: NextPage = () => {
               className="p-2 mx-2  disabled:opacity-50"
               disabled={!(selectedPageIndex < historyAsPages.length + 1)}
               onClick={() => {
+                if (state !== "after open") {
+                  setState("after open");
+                }
                 if (selectedPageIndex < historyAsPages.length + 1) {
                   setSelectedPageIndex(selectedPageIndex + 1);
                 }

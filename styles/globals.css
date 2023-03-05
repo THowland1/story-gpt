@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.book-gradient {
+  background-image: linear-gradient(
+      to right,
+      #0002,
+      #0002 1%,
+      #fff5 1.5%,
+      transparent 2.25%,
+      transparent 2.75%,
+      #0002 3.75%,
+      #0002 4.5%,
+      #fff5 5.25%,
+      #fff5 5.5%,
+      transparent 6%,
+      transparent
+    ),
+    linear-gradient(340deg, #0003, transparent);
+}
