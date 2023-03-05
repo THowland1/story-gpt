@@ -37,7 +37,7 @@ const handler = async (req: Request): Promise<Response> => {
     body: JSON.stringify({
       prompt: prompt,
       n: 1,
-      size: "512x512",
+      size: "256x256",
     }),
   });
   const body = await res.json();

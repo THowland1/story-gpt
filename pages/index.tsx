@@ -376,7 +376,7 @@ const Home: NextPage = () => {
               {selectedPageIndex + 1} / {historyAsPages.length + 2}
             </span>
             <button
-              className="p-2 mx-2  disabled:opacity-50"
+              className="p-2 mx-2  disabled:opacity-50 relative"
               disabled={!(selectedPageIndex < historyAsPages.length + 1)}
               onClick={() => {
                 if (state !== "after open") {
@@ -387,6 +387,9 @@ const Home: NextPage = () => {
                 }
               }}
             >
+              {state !== "after open" && (
+                <span className="absolute inset-0 m-auto h-4 w-4 animate-ping bg-indigo-300 rounded-full"></span>
+              )}
               &rarr;
             </button>
           </div>
