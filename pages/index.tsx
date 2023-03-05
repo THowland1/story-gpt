@@ -13,6 +13,7 @@ import Page from "../components/Page";
 import StoryPage from "../components/StoryPage";
 import { ChatGPTMessage } from "../utils/OpenAIStream";
 import { useQuery } from "@tanstack/react-query";
+import classNames from "classnames";
 
 async function generateImageUrlFromPrompt(
   prompt: string
@@ -81,7 +82,7 @@ const Home: NextPage = () => {
         });
       }
     }
-    setSelectedPageIndex(pages.length);
+    setSelectedPageIndex(pages.length + 1);
     return pages;
   }, [history]);
 
@@ -160,56 +161,6 @@ const Home: NextPage = () => {
 
       <Header />
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-12 sm:mt-20">
-        <a
-          className="flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100 mb-5"
-          href="https://github.com/THowland1/ai-quiz"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Github />
-          <p>Star on GitHub</p>
-        </a>
-        <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
-          Generate your next quiz using chatGPT
-        </h1>
-        <div className="max-w-xl w-full">
-          <div className="flex mt-10 items-center space-x-3">
-            <Image
-              src="/1-black.png"
-              width={30}
-              height={30}
-              alt="1 icon"
-              className="mb-5 sm:mb-0"
-            />
-            <p className="text-left font-medium">
-              Type in what you want the story to be about
-            </p>
-          </div>
-          <input
-            type="text"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black mt-5"
-            placeholder={"e.g. 80s Movies"}
-          />
-
-          {!loading && (
-            <button
-              className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
-              onClick={(e) => start()}
-            >
-              Generate your quiz &rarr;
-            </button>
-          )}
-          {loading && (
-            <button
-              className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
-              disabled
-            >
-              <LoadingDots color="white" style="large" />
-            </button>
-          )}
-        </div>
         <Toaster
           position="top-center"
           reverseOrder={false}
@@ -219,12 +170,53 @@ const Home: NextPage = () => {
 
         <div className="contents">
           <div
-            className="grid"
+            className="grid text-indigo-900 shadow-[2px_2px_7px_5px_#0004]"
             style={{
               minWidth: "min(450px, 100%)",
               aspectRatio: "11 / 15",
             }}
           >
+            <form
+              className={classNames(
+                "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col justify-center relative",
+                "row-start-1 col-start-1 bg-indigo-100  origin-[-4px] z-10 transition-opacity",
+                {
+                  "opacity-0 pointer-events-none": history.length > 0,
+                  "opacity-100": history.length === 0,
+                }
+              )}
+              onSubmit={(e) => {
+                e.preventDefault();
+                start();
+              }}
+            >
+              <div className="">
+                <p className="text-left font-medium text-indigo-400">
+                  Tell me a story about ...
+                </p>
+                <input
+                  type="text"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  className="text-indigo-700 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 mt-3"
+                  placeholder={"e.g. A greyhound who saves the day"}
+                />
+              </div>
+
+              {!loading && (
+                <button className="bg-indigo-600 rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-indigo-800 w-full">
+                  Let's go &rarr;
+                </button>
+              )}
+              {loading && (
+                <button
+                  className="bg-indigo-600 rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-indigo-800 w-full"
+                  disabled
+                >
+                  <LoadingDots color="white" style="large" />
+                </button>
+              )}
+            </form>
             <FrontPage
               title={titleQuery.data}
               titleLoading={titleQuery.isLoading}

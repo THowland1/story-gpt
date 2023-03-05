@@ -13,7 +13,7 @@ const Page = (props: PageProps) => {
         "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col justify-between relative",
         "row-start-1 col-start-1 bg-white  origin-[-4px]",
         {
-          "animate-[flip_1s_linear_1_forwards] z-10": isPreviousPage,
+          "animate-[flip_500ms_linear_1_forwards] z-10": isPreviousPage,
         }
       )}
       style={{
@@ -29,7 +29,7 @@ const Page = (props: PageProps) => {
         className={classNames(
           "absolute inset-0 bg-white z-10 pointer-events-none opacity-0",
           {
-            "animate-[appear-midway_1s_linear_1_forwards]": isPreviousPage,
+            "animate-[appear-midway_500ms_linear_1_forwards]": isPreviousPage,
           }
         )}
       ></div>

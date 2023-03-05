@@ -22,11 +22,11 @@ const StoryPage = (props: StoryPageProps) => {
                 className={classNames(
                   "border border-black  rounded  font-medium px-4 py-2 mt-4  w-full",
                   {
-                    "hover:bg-black/5": !props.selectedOptionKey,
+                    "hover:bg-indigo-200": !props.selectedOptionKey,
                     "opacity-25":
                       props.selectedOptionKey &&
                       props.selectedOptionKey !== option.key,
-                    "bg-sky-200":
+                    "bg-indigo-100":
                       props.selectedOptionKey &&
                       props.selectedOptionKey === option.key,
                   }

@@ -17,22 +17,22 @@ export function parseResponse(response: string): {
 
   for (let index = indexOfFirstOption; index < lines.length; index++) {
     const line = lines[index];
-    if (line.startsWith("1:")) {
+    if (line.startsWith("1: ")) {
       options.push({
         key: "Option 1",
-        text: line,
+        text: line.replace("1: ", ""),
       });
     }
-    if (line.startsWith("2:")) {
+    if (line.startsWith("2: ")) {
       options.push({
         key: "Option 2",
-        text: line,
+        text: line.replace("2: ", ""),
       });
     }
-    if (line.startsWith("3:")) {
+    if (line.startsWith("3: ")) {
       options.push({
         key: "Option 3",
-        text: line,
+        text: line.replace("3: ", ""),
       });
     }
   }
