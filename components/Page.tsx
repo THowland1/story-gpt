@@ -1,17 +1,11 @@
 import classNames from "classnames";
-import { useState } from "react";
-import { parseResponse } from "../utils/parseResponse";
 
 type PageProps = {
-  content: string;
-  selectedOptionKey: string;
-  onOptionKeySelected: (optionKey: string) => Promise<void>;
+  children: React.ReactNode;
   pageIndex: number;
   activePageIndex: number;
 };
 const Page = (props: PageProps) => {
-  const pageContent = parseResponse(props.content);
-  const [loading, setLoading] = useState(false);
   const isPreviousPage = props.pageIndex < props.activePageIndex;
   return (
     <div
@@ -39,33 +33,7 @@ const Page = (props: PageProps) => {
           }
         )}
       ></div>
-      <p className="text-justify my-8">{pageContent.paragraph}</p>
-      <div className="flex flex-col items-center justify-center max-w-xl mx-auto">
-        {pageContent.options.map((option) => {
-          return (
-            <>
-              <button
-                className={classNames(
-                  "border border-black  rounded  font-medium px-4 py-2 mt-4  w-full",
-                  {
-                    "hover:bg-black/5": !props.selectedOptionKey,
-                    "opacity-25":
-                      props.selectedOptionKey &&
-                      props.selectedOptionKey !== option.key,
-                    "bg-sky-200":
-                      props.selectedOptionKey &&
-                      props.selectedOptionKey === option.key,
-                  }
-                )}
-                disabled={!!props.selectedOptionKey}
-                onClick={(e) => props.onOptionKeySelected(option.key)}
-              >
-                {option.text}
-              </button>
-            </>
-          );
-        })}
-      </div>
+      {props.children}
     </div>
   );
 };

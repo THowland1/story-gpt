@@ -5,11 +5,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import DropDown, { VibeType } from "../components/DropDown";
 import Footer from "../components/Footer";
+import FrontPage from "../components/FrontPage";
 import Github from "../components/GitHub";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
 import Page from "../components/Page";
+import StoryPage from "../components/StoryPage";
 import { ChatGPTMessage } from "../utils/OpenAIStream";
+import { useQuery } from "@tanstack/react-query";
+
+async function generateImageUrlFromPrompt(
+  prompt: string
+): Promise<{ url: string }> {
+  const response = await fetch("/api/generate-image", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  });
+  const body = await response.json();
+
+  return body;
+}
 
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +36,14 @@ const Home: NextPage = () => {
   const [latestResponse, setLatestResponse] = useState<string>("");
   const [history, setHistory] = useState<ChatGPTMessage[]>([]);
   const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
+  const imageQuery = useQuery({
+    queryKey: ["imageUrls", bio],
+    queryFn: ({ queryKey }) =>
+      generateImageUrlFromPrompt(
+        `A storybook illustration for a story about ${queryKey[1]}`
+      ),
+    enabled: false,
+  });
 
   const historyAsPages = useMemo(() => {
     const pages: { content: string; selectedOptionKey: string }[] = [];
@@ -51,7 +77,8 @@ const Home: NextPage = () => {
     await generateBio(newHistory);
   }
 
-  function start() {
+  async function start() {
+    imageQuery.refetch();
     const newHistory: ChatGPTMessage[] = [
       {
         role: "user",
@@ -59,8 +86,11 @@ const Home: NextPage = () => {
       },
     ];
     setHistory(newHistory);
+    await setImageUrl();
     return generateBio(newHistory);
   }
+
+  async function setImageUrl() {}
 
   const generateBio = async (history2: ChatGPTMessage[]) => {
     setLatestResponse("");
@@ -117,7 +147,6 @@ const Home: NextPage = () => {
         <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
           Generate your next quiz using chatGPT
         </h1>
-        {/* <p className="text-slate-500 mt-5">47,118 bios generated so far.</p> */}
         <div className="max-w-xl w-full">
           <div className="flex mt-10 items-center space-x-3">
             <Image
@@ -156,48 +185,42 @@ const Home: NextPage = () => {
             </button>
           )}
         </div>
-        <pre className="whitespace-pre-wrap text-left">
-          {/* {JSON.stringify(history, null, 2)} */}
-        </pre>
         <Toaster
           position="top-center"
           reverseOrder={false}
           toastOptions={{ duration: 2000 }}
         />
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
-        <div className="space-y-10 my-10">
-          {latestResponse && (
-            <>
-              <div>
-                <h2 className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto">
-                  Your generated quiz
-                </h2>
-              </div>
-            </>
-          )}
-        </div>
+
         <div>
           <div className="grid">
+            <FrontPage
+              title=""
+              backgroundImageUrl={imageQuery.data?.url}
+              backgroundImageUrlLoading={imageQuery.isLoading}
+              pageIndex={0}
+              activePageIndex={selectedPageIndex}
+            ></FrontPage>
             {historyAsPages.map((page, index) => (
-              <Page
+              <StoryPage
                 content={page.content}
                 selectedOptionKey={page.selectedOptionKey}
                 onOptionKeySelected={(newKey) => {
                   return pickOption(newKey);
                 }}
-                pageIndex={index}
+                pageIndex={index + 1}
                 activePageIndex={selectedPageIndex}
-              ></Page>
+              ></StoryPage>
             ))}
-            <Page
+            <StoryPage
               content={latestResponse}
               selectedOptionKey={""}
               onOptionKeySelected={(newKey) => {
                 return pickOption(newKey);
               }}
-              pageIndex={historyAsPages.length}
+              pageIndex={historyAsPages.length + 1}
               activePageIndex={selectedPageIndex}
-            ></Page>
+            ></StoryPage>
           </div>
           <div className="">
             <button
@@ -212,13 +235,13 @@ const Home: NextPage = () => {
               &larr;
             </button>
             <span>
-              {selectedPageIndex + 1} / {historyAsPages.length + 1}
+              {selectedPageIndex + 1} / {historyAsPages.length + 2}
             </span>
             <button
               className="p-2 mx-2  disabled:opacity-50"
-              disabled={!(selectedPageIndex < historyAsPages.length)}
+              disabled={!(selectedPageIndex < historyAsPages.length + 1)}
               onClick={() => {
-                if (selectedPageIndex < historyAsPages.length) {
+                if (selectedPageIndex < historyAsPages.length + 1) {
                   setSelectedPageIndex(selectedPageIndex + 1);
                 }
               }}
