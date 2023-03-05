@@ -217,11 +217,11 @@ const Home: NextPage = () => {
         />
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
 
-        <div>
+        <div className="contents">
           <div
             className="grid"
             style={{
-              minWidth: "min(350px, 100%)",
+              minWidth: "min(450px, 100%)",
               aspectRatio: "11 / 15",
             }}
           >
