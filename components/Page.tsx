@@ -10,7 +10,7 @@ const Page = (props: PageProps) => {
   return (
     <div
       className={classNames(
-        "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col justify-between relative rounded-sm overflow-hidden",
+        "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col relative rounded-sm overflow-hidden",
         "row-start-1 col-start-1 bg-white  origin-[-4px]",
         "font-serif",
         {

@@ -14,6 +14,7 @@ import StoryPage from "../components/StoryPage";
 import { ChatGPTMessage } from "../utils/OpenAIStream";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 const IDEAS = [
   "Time traveler's dilemma",
@@ -98,6 +99,10 @@ const IDEAS = [
   "Fight against the gods",
 ];
 
+function getRandomIdea() {
+  return IDEAS[Math.floor(Math.random() * IDEAS.length)];
+}
+
 async function generateImageUrlFromPrompt(
   prompt: string
 ): Promise<{ url: string }> {
@@ -133,7 +138,7 @@ async function generateTitleFromPrompt(prompt: string): Promise<string> {
 
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
-  const [bio, setBio] = useState("");
+  const [bio, setBio] = useState(getRandomIdea());
   const [vibe, setVibe] = useState<VibeType>("Professional");
   const [latestResponse, setLatestResponse] = useState<string>("");
   const [history, setHistory] = useState<ChatGPTMessage[]>([]);
@@ -152,7 +157,9 @@ const Home: NextPage = () => {
   const titleQuery = useQuery({
     queryKey: ["titles", bio],
     queryFn: ({ queryKey }) =>
-      generateTitleFromPrompt(`Write a title for a story about ${queryKey[1]}`),
+      generateTitleFromPrompt(
+        `Write a title for a story about ${queryKey[1]}, in 5 words or less`
+      ),
     enabled: false,
   });
 
@@ -176,6 +183,9 @@ const Home: NextPage = () => {
     return pages;
   }, [history, state]);
 
+  async function regenerate() {
+    await generateBio(history);
+  }
   async function pickOption(option: string) {
     const newHistory: ChatGPTMessage[] = [
       ...history,
@@ -286,22 +296,33 @@ const Home: NextPage = () => {
                 Choose your own adventure with a ChatGPT-authored story about...
               </p>
               <div>
-                <div className="">
+                <div className="relative mt-3">
                   <input
                     type="text"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className="text-indigo-700 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 mt-3"
-                    placeholder={"e.g. A greyhound who saves the day"}
+                    className="text-indigo-700 pr-[42px] w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 "
+                    placeholder={`e.g. ${getRandomIdea()}`}
                   />
+                  <div className="absolute top-0 bottom-0 right-0 m-auto h-[42px] w-[42px] flex justify-center items-center text-indigo-500">
+                    {bio && (
+                      <button
+                        type="button"
+                        className="hover:bg-indigo-100 rounded-full"
+                        onClick={() => setBio("")}
+                      >
+                        <XMarkIcon className="h-6 w-6 " />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-left">
                   <button
                     type="button"
-                    className="text-indigo-100 font-light text-sm"
+                    className="text-indigo-200 font-light text-sm hover:text-indigo-50"
                     onClick={() => {
-                      setBio(IDEAS[Math.floor(Math.random() * IDEAS.length)]);
+                      setBio(getRandomIdea());
                     }}
                   >
                     random
@@ -309,7 +330,7 @@ const Home: NextPage = () => {
                 </div>
 
                 {!loading && (
-                  <button className="bg-indigo-700 border border-white/30 rounded-xl text-white font-medium px-4 py-2  mt-2 hover:bg-indigo-800 w-full">
+                  <button className="bg-indigo-700 border border-white/30 rounded-xl text-white font-medium px-4 py-2  mt-4 hover:bg-indigo-800 w-full">
                     Let's go &rarr;
                   </button>
                 )}
@@ -350,6 +371,7 @@ const Home: NextPage = () => {
                 onOptionKeySelected={(newKey) => {
                   return pickOption(newKey);
                 }}
+                onRegenerate={() => regenerate()}
                 pageIndex={historyAsPages.length + 1}
                 activePageIndex={selectedPageIndex}
               ></StoryPage>
