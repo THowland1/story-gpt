@@ -302,7 +302,7 @@ const Home: NextPage = () => {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     className="text-indigo-700 pr-[42px] w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 "
-                    placeholder={`e.g. ${getRandomIdea()}`}
+                    placeholder={`e.g. ${IDEAS[0]}`}
                   />
                   <div className="absolute top-0 bottom-0 right-0 m-auto h-[42px] w-[42px] flex justify-center items-center text-indigo-500">
                     {bio && (
