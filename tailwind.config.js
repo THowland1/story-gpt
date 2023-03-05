@@ -1,3 +1,5 @@
+const { fontFamily } = require("tailwindcss/defaultTheme");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   future: {
@@ -9,6 +11,10 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    fontFamily: {
+      primary: ["var(--lora-font)", ...fontFamily.sans],
+      serif: ["var(--lora-font)", ...fontFamily.serif],
+    },
     extend: {
       keyframes: {
         flip: {
