@@ -30,6 +30,14 @@ const FrontPage = (props: FrontPageProps) => {
           {props.title}
         </div>
       </div>
+
+      <div
+        className="absolute inset-0 p-12"
+        style={{
+          background:
+            "linear-gradient(to right, #0003, #0003 1%,  #fff7 1.5%, transparent 2.25%, transparent 2.75%, #0003 3.75%, #0003 4.5%,#fff7 5.25%,#fff7 5.5%, transparent 6%, transparent), linear-gradient(340deg, #0003, transparent)",
+        }}
+      ></div>
     </Page>
   );
 };
