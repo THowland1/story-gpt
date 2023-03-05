@@ -29,6 +29,24 @@ async function generateImageUrlFromPrompt(
   return body;
 }
 
+async function generateTitleFromPrompt(prompt: string): Promise<string> {
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([
+      {
+        role: "user",
+        content: prompt,
+      },
+    ]),
+  });
+  const body = await response.json();
+
+  return body;
+}
+
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
@@ -42,6 +60,12 @@ const Home: NextPage = () => {
       generateImageUrlFromPrompt(
         `A storybook illustration for a story about ${queryKey[1]}`
       ),
+    enabled: false,
+  });
+  const titleQuery = useQuery({
+    queryKey: ["titles", bio],
+    queryFn: ({ queryKey }) =>
+      generateTitleFromPrompt(`Write a title for a story about ${queryKey[1]}`),
     enabled: false,
   });
 
@@ -79,6 +103,7 @@ const Home: NextPage = () => {
 
   async function start() {
     imageQuery.refetch();
+    titleQuery.refetch();
     const newHistory: ChatGPTMessage[] = [
       {
         role: "user",
@@ -195,7 +220,8 @@ const Home: NextPage = () => {
         <div>
           <div className="grid">
             <FrontPage
-              title=""
+              title={titleQuery.data}
+              titleLoading={titleQuery.isLoading}
               backgroundImageUrl={imageQuery.data?.url}
               backgroundImageUrlLoading={imageQuery.isLoading}
               pageIndex={0}
