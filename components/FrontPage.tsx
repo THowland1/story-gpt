@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Page from "./Page";
 
 type FrontPageProps = {
@@ -12,7 +13,9 @@ const FrontPage = (props: FrontPageProps) => {
   return (
     <Page activePageIndex={props.activePageIndex} pageIndex={props.pageIndex}>
       <div
-        className="absolute inset-0 p-12"
+        className={classNames("absolute inset-0 p-12 bg-indigo-500", {
+          "animate-pulse": props.backgroundImageUrlLoading,
+        })}
         style={{
           backgroundImage: `url(${props.backgroundImageUrl})`,
           backgroundSize: "cover",

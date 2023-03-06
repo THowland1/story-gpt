@@ -13,6 +13,7 @@ const Page = (props: PageProps) => {
         "w-full max-w-md mx-auto p-8 shadow h-full flex flex-col relative rounded-sm overflow-hidden",
         "row-start-1 col-start-1 bg-white  origin-[-4px]",
         "font-serif",
+        "text-xs leading-5 sm:text-sm sm:leading-6",
         {
           "animate-[flip_500ms_linear_1_forwards] z-10": isPreviousPage,
         }

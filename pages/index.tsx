@@ -271,10 +271,9 @@ const Home: NextPage = () => {
 
         <div className="contents">
           <div
-            className="grid text-indigo-900 shadow-[2px_2px_7px_5px_#0004] relative"
+            className="grid text-indigo-900 shadow-[2px_2px_7px_5px_#0004] relative h-[600px]"
             style={{
               minWidth: "min(450px, 100%)",
-              aspectRatio: "11 / 15",
             }}
           >
             <form
@@ -292,7 +291,7 @@ const Home: NextPage = () => {
                 start();
               }}
             >
-              <p className="text-3xl font-semibold text-white flex-1">
+              <p className="text-xl sm:text-3xl font-semibold text-white flex-1 flex flex-col justify-center">
                 Choose your own adventure with a ChatGPT-authored story about...
               </p>
               <div>
