@@ -6,7 +6,7 @@ export default function Header() {
     <header className="flex justify-between items-center w-full mt-2 border-b-2 pb-4 sm:px-4 px-2">
       <Link href="/" className="flex space-x-3">
         <h1 className="sm:text-4xl text-2xl font-bold ml-2 tracking-tight">
-          storyGPT
+          StoryGPT
         </h1>
       </Link>
       <span></span>

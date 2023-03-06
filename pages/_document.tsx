@@ -6,30 +6,27 @@ class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <link rel="icon" href="/favicon.ico" />
-          <meta
-            name="description"
-            content="Generate your next quiz in seconds."
-          />
-          <meta property="og:site_name" content="twitterbio.com" />
+          <meta name="description" content="Choose your own AI Adventure!" />
+          <meta property="og:site_name" content="storygpt.xyz" />
           <meta
             property="og:description"
-            content="Generate your next quiz in seconds."
+            content="Choose your own AI Adventure!"
           />
-          <meta property="og:title" content="quiz Generator" />
-          {/* <meta name="twitter:card" content="summary_large_image" /> */}
-          <meta name="twitter:title" content="quiz Generator" />
+          <meta property="og:title" content="StoryGPT" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="StoryGPT" />
           <meta
             name="twitter:description"
-            content="Generate your next quiz in seconds."
+            content="Choose your own AI Adventure!"
           />
-          {/* <meta
+          <meta
             property="og:image"
-            content="https://twitterbio.com/og-image.png"
+            content="https://storygpt.xyz/og-image.png"
           />
           <meta
             name="twitter:image"
-            content="https://twitterbio.com/og-image.png"
-          /> */}
+            content="https://storygpt.xyz/og-image.png"
+          />
         </Head>
         <body className="bg-indigo-500 text-indigo-50 ">
           <Main />
