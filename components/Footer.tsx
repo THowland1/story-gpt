@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="text-center h-12 w-full pt-2  border-t flex sm:flex-row flex-col justify-between items-center px-3 space-y-3 sm:mb-0 mb-3">
+    <footer className="text-center h-12 w-full pt-2  border-t flex sm:flex-row flex-col justify-between items-center px-3 sm:mb-0 mb-3">
       <div>
         Powered by{" "}
         <a
@@ -13,15 +13,9 @@ export default function Footer() {
         >
           ChatGPT{" "}
         </a>
-        and{" "}
-        <a
-          href="https://vercel.com/"
-          target="_blank"
-          rel="noreferrer"
-          className="font-bold hover:underline transition underline-offset-2"
-        >
-          Vercel Edge Functions.
-        </a>
+      </div>
+      <div className="text-sm text-white/70">
+        This is just a fun experiment, please support real authors and libraries
       </div>
       <div className="flex space-x-4 pb-4 sm:pb-0">
         <Link
